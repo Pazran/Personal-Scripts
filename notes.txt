@@ -34,3 +34,4 @@ for i in $(find /home/clara/Desktop -type f -name "$fileType" -size +10M -exec m
 do
     echo "$i"
 done
+###

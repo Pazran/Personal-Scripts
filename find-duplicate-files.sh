@@ -2,15 +2,12 @@
 
 function cursorBack() {
   echo -en "\033[$1D"
-  # Mac compatible, but goes back to first column always. See comments
-  #echo -en "\r"
 }
 
 IFS=$'\n'
 a=0
 FILE_TYPE="*.*"
 TEMP_FILE=$(mktemp '/tmp/dupe-list.XXXXXXXX')
-#mktemp $TEMP_FILE > /dev/null
 find Downloads -type f -name "$FILE_TYPE" -size -10M -exec md5sum {} + | sort -k 1,1 |  uniq -D -w 33 > $TEMP_FILE &
 
 pid=$!
@@ -25,8 +22,6 @@ z=0
 tput civis
 while ps -p $pid >/dev/null
 do
-    #z=$(((z+1)%4))
-    #printf "\rFinding duplicate files for file type: $FILE_TYPE... ${spin:$z:1}"
     z=$(((z+3)%${#spin}))
     printf "\rFinding duplicate files for file type: $FILE_TYPE... ${spin:$z:3}"
     cursorBack 1

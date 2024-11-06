@@ -1,0 +1,36 @@
+#!/usr/bin/bash
+find /home -type f -name '*.mp4' -size +10M -exec md5sum {} \; | sort | uniq -D -f2 >> Desktop/test.md5
+cat Desktop/test.md5
+
+
+
+You could use something like this:
+
+find . -name '*.txt' | while read line; do
+    echo "Processing file '$line'"
+done
+
+For example, to make a copy:
+
+find . -name '*.txt' | while read line; do
+    echo "Copying '$line' to /tmp"
+    cp -- "$line" /tmp
+done
+
+=======================================
+
+for i in $(find . -name '*.mov' );
+do
+    echo "$i"
+done
+
+======================================
+
+IFS=$'\n'
+fileType="*.*"
+echo "File type: $fileType"
+echo "Generatng hash and comparing files..."
+for i in $(find /home/clara/Desktop -type f -name "$fileType" -size +10M -exec md5sum {} \; | sort -k 1,1 | uniq -D -w 33 );
+do
+    echo "$i"
+done

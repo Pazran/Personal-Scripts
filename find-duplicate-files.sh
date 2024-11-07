@@ -6,24 +6,37 @@ function cursorBack() {
 
 IFS=$'\n'
 a=0
-FILE_TYPE="*.*"
+FILE_DIR='/home/clara/Desktop'
 TEMP_FILE=$(mktemp '/tmp/dupe-list.XXXXXXXX')
-find Downloads -type f -name "$FILE_TYPE" -size -10M -exec md5sum {} + | sort -k 1,1 |  uniq -D -w 33 > $TEMP_FILE &
+
+#If no argument passed, use the default value for file type and size
+if [[ $# -ge 2 ]];
+then
+    while getopts "n:s:" option;
+    do
+        case "${option}" in
+          n)FILE_NAME=${OPTARG};;
+          s)FILE_SIZE=${OPTARG};;
+        esac
+    done
+    #Get the remaining argument
+    shift $(($OPTIND - 1))
+    #echo $*
+    find "$*" -type f -name "$FILE_NAME" -size $FILE_SIZE -exec md5sum {} + | sort -k 1,1 |  uniq -D -w 33 > $TEMP_FILE &
+    FILE_DIR="$*"
+else
+    find /home/clara/Desktop -type f -name "*.*" -size +10M -exec md5sum {} + | sort -k 1,1 |  uniq -D -w 33 > $TEMP_FILE &
+fi
 
 pid=$!
 #spin='-\|/'
-#spin='⣾⣽⣻⢿⡿⣟⣯⣷'
-#spin='◐◓◑◒'
-#spin='┤┘┴└├┌┬┐'
 spin="▁▂▃▄▅▆▇█▇▆▅▄▃▂▁"
-#spin="▉▊▋▌▍▎▏▎▍▌▋▊▉"
-#spin='⠁⠂⠄⡀⢀⠠⠐⠈'
 z=0
 tput civis
 while ps -p $pid >/dev/null
 do
     z=$(((z+3)%${#spin}))
-    printf "\rFinding duplicate files for file type: $FILE_TYPE... ${spin:$z:3}"
+    printf "\rFinding duplicate files in $FILE_DIR ${spin:$z:3}"
     cursorBack 1
     sleep .1
 done

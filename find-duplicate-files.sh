@@ -22,8 +22,16 @@ then
     #Get the remaining argument
     shift $(($OPTIND - 1))
     #echo $*
-    find "$*" -type f -name "$FILE_NAME" -size $FILE_SIZE -exec md5sum {} + | sort -k 1,1 |  uniq -D -w 33 > $TEMP_FILE &
     FILE_DIR="$*"
+
+    if [ "$FILE_DIR" = './' ] || [ "$FILE_DIR" = '.' ]
+    then
+        FILE_DIR="${PWD}"
+    else
+        FILE_DIR="$*"
+    fi
+
+    find "$FILE_DIR" -type f -name "$FILE_NAME" -size $FILE_SIZE -exec md5sum {} + | sort -k 1,1 |  uniq -D -w 33 > $TEMP_FILE &
 else
     find /home/clara/Desktop -type f -name "*.*" -size +10M -exec md5sum {} + | sort -k 1,1 |  uniq -D -w 33 > $TEMP_FILE &
 fi

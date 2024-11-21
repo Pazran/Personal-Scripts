@@ -14,7 +14,7 @@ function timestamp() {
 IFS=$'\n'
 a=0
 FILE_DIR='$HOME/Desktop'
-FILE_LOG='$HOME/Desktop'
+FILE_LOG=''
 TEMP_FILE=$(mktemp '/tmp/dupe-list.XXXXXXXX')
 
 #If no argument passed, use the default value for file type and size
@@ -40,7 +40,7 @@ then
     fi
     find "$FILE_DIR" -type f -name "$FILE_NAME" -size $FILE_SIZE -exec md5sum {} + | sort -k 1,1 |  uniq -D -w 33 > $TEMP_FILE &
 else
-    find '$HOME/Desktop' -type f -name "*.*" -size +10M -exec md5sum {} + | sort -k 1,1 |  uniq -D -w 33 > $TEMP_FILE &
+    find "$FILE_DIR" -type f -name "*.*" -size +10M -exec md5sum {} + | sort -k 1,1 |  uniq -D -w 33 > $TEMP_FILE &
 fi
 
 pid=$!
@@ -67,7 +67,7 @@ tput cnorm
 for i in $(cat $TEMP_FILE)
 do
     printf "\n$i"
-    printf '\n%s %s' "$(date)" "$i"  >> $FILE_LOG/find-duplicate-files.log
+    printf '\n%s %s' "$(date)" "$i" >> $FILE_LOG/find-duplicate-files.log
     ((a++))
 done
 printf "%.0s\n" {1..2}
